@@ -44,3 +44,35 @@ groups:
         annotations:
           summary: "Instance {{ $labels.instance }} down"
           description: "La cible {{ $labels.job }} / {{ $labels.instance }} est inaccessible depuis 1 minute."
+
+  - name: blackbox_alerts
+    rules:
+      # Probe HTTP/TCP échoué
+      - alert: EndpointDown
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Endpoint down : {{ $labels.instance }}"
+          description: "La sonde Blackbox a échoué pour {{ $labels.instance }} (module={{ $labels.job }})."
+
+      # Latence élevée
+      - alert: EndpointHighLatency
+        expr: probe_duration_seconds > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence élevée sur {{ $labels.instance }}"
+          description: "Le temps de réponse est de {{ $value | printf \"%.2f\" }}s (seuil 2s)."
+
+      # Certificat SSL bientôt expiré (< 15 jours)
+      - alert: SSLCertExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 15
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Certificat SSL expire bientôt : {{ $labels.instance }}"
+          description: "Le certificat expire dans moins de 15 jours."
