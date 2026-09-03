@@ -1,0 +1,63 @@
+# =============================================================================
+# Configuration Prometheus - Portfolio SysAdmin
+# =============================================================================
+
+global:
+  scrape_interval: 15s          # Fréquence de scrape par défaut
+  evaluation_interval: 15s      # Fréquence d'évaluation des règles
+  scrape_timeout: 10s
+
+  # Labels externes (utiles pour la fédération / remote write)
+  external_labels:
+    monitor: 'portfolio-sysadmin'
+    environment: 'demo'
+    cluster: 'local-docker'
+
+# Fichiers de règles d'alerting / recording rules
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+# Configuration d'alerting (Alertmanager optionnel - non inclus dans cette version de base)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+scrape_configs:
+  # -------------------------------------------------------------------------
+  # Prometheus se scrape lui-même (métriques internes)
+  # -------------------------------------------------------------------------
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          instance: 'prometheus'
+
+  # -------------------------------------------------------------------------
+  # Node Exporter - Métriques de l'hôte Linux
+  # -------------------------------------------------------------------------
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: 'docker-host'
+          job: 'node'
+
+  # -------------------------------------------------------------------------
+  # cAdvisor - Métriques des conteneurs Docker
+  # -------------------------------------------------------------------------
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          instance: 'docker-host'
+
+  # -------------------------------------------------------------------------
+  # Grafana (métriques internes optionnelles)
+  # -------------------------------------------------------------------------
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          instance: 'grafana'
+    metrics_path: /metrics
