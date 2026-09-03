@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=PortfolioAdmin2024!   # À changer en prod !
+      - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=http://localhost:3000
       - GF_INSTALL_PLUGINS=
