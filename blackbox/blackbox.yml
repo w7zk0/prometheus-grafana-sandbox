@@ -1,0 +1,42 @@
+# =============================================================================
+# Blackbox Exporter - Configuration des modules de probe
+# =============================================================================
+
+modules:
+  # Vérifie qu'un endpoint HTTP/HTTPS répond 2xx
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      valid_status_codes: []  # Defaults to 2xx
+      method: GET
+      follow_redirects: true
+      preferred_ip_protocol: "ip4"
+      fail_if_ssl: false
+      fail_if_not_ssl: false
+
+  # Vérifie HTTPS + certificat valide
+  http_2xx_ssl:
+    prober: http
+    timeout: 5s
+    http:
+      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+      method: GET
+      follow_redirects: true
+      preferred_ip_protocol: "ip4"
+      fail_if_not_ssl: true
+      tls_config:
+        insecure_skip_verify: false
+
+  # Simple connexion TCP
+  tcp_connect:
+    prober: tcp
+    timeout: 5s
+
+  # Ping ICMP (nécessite CAP_NET_RAW / privileged)
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: "ip4"
