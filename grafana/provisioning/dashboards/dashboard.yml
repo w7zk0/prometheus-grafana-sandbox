@@ -1,0 +1,17 @@
+# =============================================================================
+# Provisioning des dashboards Grafana
+# =============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'Portfolio Dashboards'
+    orgId: 1
+    folder: 'SysAdmin Portfolio'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true

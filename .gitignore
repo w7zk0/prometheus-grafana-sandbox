@@ -1,0 +1,9 @@
+.env
+*.log
+.DS_Store
+prometheus_data/
+grafana_data/
+*.tar
+*.gz
+.idea/
+.vscode/

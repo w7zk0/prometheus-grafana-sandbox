@@ -1,0 +1,46 @@
+# =============================================================================
+# Règles d'alerting Prometheus - Exemples portfolio
+# =============================================================================
+
+groups:
+  - name: host_alerts
+    rules:
+      # CPU élevé
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage élevé sur {{ $labels.instance }}"
+          description: "Le CPU est à {{ $value | printf \"%.1f\" }}% depuis plus de 5 minutes."
+
+      # Mémoire élevée
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mémoire élevée sur {{ $labels.instance }}"
+          description: "Utilisation mémoire : {{ $value | printf \"%.1f\" }}%."
+
+      # Espace disque faible
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 < 15
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Espace disque faible sur {{ $labels.instance }}"
+          description: "Il reste moins de 15% d'espace libre sur {{ $labels.mountpoint }}."
+
+      # Instance down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "La cible {{ $labels.job }} / {{ $labels.instance }} est inaccessible depuis 1 minute."
