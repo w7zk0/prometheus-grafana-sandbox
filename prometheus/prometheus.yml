@@ -17,11 +17,11 @@ global:
 rule_files:
   - /etc/prometheus/rules/*.yml
 
-# Configuration d'alerting (Alertmanager optionnel - non inclus dans cette version de base)
-# alerting:
-#   alertmanagers:
-#     - static_configs:
-#         - targets: ['alertmanager:9093']
+# Configuration d'alerting → Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
 
 scrape_configs:
   # -------------------------------------------------------------------------
@@ -70,6 +70,15 @@ scrape_configs:
       - targets: ['blackbox-exporter:9115']
         labels:
           instance: 'blackbox-exporter'
+
+  # -------------------------------------------------------------------------
+  # Alertmanager - Self metrics
+  # -------------------------------------------------------------------------
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+        labels:
+          instance: 'alertmanager'
 
   # -------------------------------------------------------------------------
   # Blackbox probes - Exemples de cibles HTTP/HTTPS
