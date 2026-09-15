@@ -50,6 +50,8 @@ Everything is orchestrated with **Docker Compose**, including persistent volumes
 ## 🏗 Architecture
 
 ```
+<img width="807" height="693" alt="Untitled-2026-09-15-2047" src="https://github.com/user-attachments/assets/19f33168-b549-434d-aef3-f5416772a9f4" />
+
 ┌─────────────────────────────────────────────────────────────┐
 │                     Linux Host / Docker                      │
 │                                                             │
