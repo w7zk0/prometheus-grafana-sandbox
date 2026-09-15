@@ -1,7 +1,7 @@
-# 🚀 Portfolio SysAdmin – Stack Monitoring Prometheus + Grafana (Docker)
+# 🚀 SysAdmin Portfolio – Prometheus + Grafana Monitoring Stack (Docker)
 
-> **Projet de démonstration** des compétences en monitoring, observability et administration système.  
-> Stack complète, prête à déployer, suivant les bonnes pratiques Docker & Prometheus.
+> **Demo project** showcasing monitoring, observability, and system administration skills.  
+> Complete, ready-to-deploy stack following Docker & Prometheus best practices.
 
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
@@ -10,38 +10,40 @@
 
 ---
 
-## 📋 Table des matières
+## 📋 Table of Contents
 
-- [Présentation](#-présentation)
+- [Overview](#-overview)
 - [Architecture](#-architecture)
-- [Compétences démontrées](#-compétences-démontrées)
-- [Prérequis](#-prérequis)
-- [Démarrage rapide](#-démarrage-rapide)
-- [Accès aux interfaces](#-accès-aux-interfaces)
-- [Configuration détaillée](#-configuration-détaillée)
-- [Dashboards recommandés](#-dashboards-recommandés)
-- [Exemples de requêtes PromQL](#-exemples-de-requêtes-promql)
-- [Bonnes pratiques appliquées](#-bonnes-pratiques-appliquées)
-- [Améliorations possibles (production)](#-améliorations-possibles-production)
-- [Structure du projet](#-structure-du-projet)
-- [Auteur](#-auteur)
+- [Skills Demonstrated](#-skills-demonstrated)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Access the UIs](#-access-the-uis)
+- [Detailed Configuration](#-detailed-configuration)
+- [Recommended Dashboards](#-recommended-dashboards)
+- [PromQL Examples](#-promql-examples)
+- [Applied Best Practices](#-applied-best-practices)
+- [Possible Production Improvements](#-possible-production-improvements)
+- [Project Structure](#-project-structure)
+- [Author](#-author)
 
 ---
 
-## 🎯 Présentation
+## 🎯 Overview
 
-Ce repository contient une **stack de monitoring complète** basée sur :
+This repository contains a **complete monitoring stack** based on:
 
-| Composant          | Rôle                                      | Version    |
-|--------------------|-------------------------------------------|------------|
-| **Prometheus**     | Collecte, stockage TSDB & alerting        | v2.55.1    |
-| **Grafana**        | Visualisation, dashboards & alerting UI   | 11.3.0     |
-| **Node Exporter**  | Métriques système de l’hôte               | v1.8.2     |
-| **cAdvisor**       | Métriques des conteneurs Docker           | v0.49.1    |
+| Component              | Role                                          | Version  |
+|------------------------|-----------------------------------------------|----------|
+| **Prometheus**         | Metrics collection, TSDB storage & alerting   | v2.55.1  |
+| **Grafana**            | Visualization, dashboards & alerting UI       | 11.3.0   |
+| **Node Exporter**      | Host system metrics                           | v1.8.2   |
+| **cAdvisor**           | Docker container metrics                      | v0.49.1  |
+| **Blackbox Exporter**  | HTTP/HTTPS/TCP/ICMP probing (availability)    | v0.25.0  |
+| **Alertmanager**       | Alert routing and management                  | v0.27.0  |
 
-Le tout est orchestré avec **Docker Compose**, avec volumes persistants, healthchecks, limites de ressources et provisioning automatique de Grafana.
+Everything is orchestrated with **Docker Compose**, including persistent volumes, healthchecks, resource limits, and automatic Grafana provisioning.
 
-**Objectif portfolio** : montrer que je sais mettre en place un monitoring professionnel, compréhensible, maintenable et sécurisable.
+**Portfolio goal**: demonstrate the ability to set up professional, understandable, maintainable, and securable monitoring.
 
 ---
 
@@ -49,7 +51,7 @@ Le tout est orchestré avec **Docker Compose**, avec volumes persistants, health
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Hôte Linux / Docker                      │
+│                     Linux Host / Docker                      │
 │                                                             │
 │  ┌──────────────┐     scrape      ┌──────────────────────┐  │
 │  │ Node Exporter│◄────────────────┤                      │  │
@@ -59,7 +61,7 @@ Le tout est orchestré avec **Docker Compose**, avec volumes persistants, health
 │  ┌──────────────┐     scrape      │                      │  │
 │  │   cAdvisor   │◄────────────────┤  - scrape configs    │  │
 │  │   :8080      │                 │  - rules / alerts    │  │
-│  └──────────────┘                 │  - TSDB (15j / 5Go)  │  │
+│  └──────────────┘                 │  - TSDB (15d / 5GB)  │  │
 │                                   └──────────┬───────────┘  │
 │                                              │              │
 │                                              │ query        │
@@ -67,38 +69,42 @@ Le tout est orchestré avec **Docker Compose**, avec volumes persistants, health
 │                                   ┌──────────────────────┐  │
 │                                   │      Grafana         │  │
 │                                   │       :3000          │  │
-│                                   │  - Datasource auto   │  │
+│                                   │  - Auto datasource   │  │
 │                                   │  - Dashboards        │  │
 │                                   └──────────────────────┘  │
+│                                                             │
+│  Blackbox Exporter (:9115)  →  probes HTTP/TCP targets      │
+│  Alertmanager (:9093)       ←  receives alerts from Prom    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Flux de données** :
-1. Node Exporter et cAdvisor exposent les métriques en format Prometheus.
-2. Prometheus scrape périodiquement (15s) ces targets.
-3. Grafana interroge Prometheus via PromQL pour afficher les graphiques.
+**Data flow**:
+1. Node Exporter and cAdvisor expose metrics in Prometheus format.
+2. Prometheus scrapes these targets periodically (every 15s).
+3. Grafana queries Prometheus via PromQL to display graphs.
+4. Alertmanager receives and routes alerts defined in Prometheus rules.
 
 ---
 
-## 💡 Compétences démontrées
+## 💡 Skills Demonstrated
 
-- **Docker & Docker Compose** : multi-services, networks isolés, volumes nommés, healthchecks, resource limits
-- **Prometheus** : configuration de scrape, labels, retention, rules d’alerting, self-monitoring
-- **Grafana** : provisioning déclaratif (datasources + dashboards), sécurité basique
-- **Observability** : métriques host + conteneurs, alertes sur symptômes (CPU, RAM, disque, down)
-- **SysAdmin** : compréhension des métriques système Linux (CPU, mémoire, filesystem, réseau)
-- **Bonnes pratiques** : versions pinnées, configuration en lecture seule, isolation réseau, documentation claire
+- **Docker & Docker Compose**: multi-service stacks, isolated networks, named volumes, healthchecks, resource limits
+- **Prometheus**: scrape configuration, labels, retention, alerting rules, self-monitoring
+- **Grafana**: declarative provisioning (datasources + dashboards), basic security
+- **Observability**: host + container metrics, symptom-based alerts (CPU, RAM, disk, down)
+- **SysAdmin**: understanding of Linux system metrics (CPU, memory, filesystem, network)
+- **Best practices**: pinned versions, read-only configs, network isolation, clear documentation
 
 ---
 
-## 📦 Prérequis
+## 📦 Prerequisites
 
-- Docker Engine ≥ 24
+- Docker Engine ≥ 24 (or Podman with compose)
 - Docker Compose ≥ 2.20 (`docker compose` plugin)
-- ~2 Go de RAM libre
-- Ports libres : **3000** (Grafana), **9090** (Prometheus), **9100** (Node Exporter), **8080** (cAdvisor)
+- ~2 GB free RAM
+- Free ports: **3000** (Grafana), **9090** (Prometheus), **9093** (Alertmanager), **9100** (Node Exporter), **9115** (Blackbox), **8080** (cAdvisor)
 
-Vérification rapide :
+Quick check:
 
 ```bash
 docker --version
@@ -107,182 +113,205 @@ docker compose version
 
 ---
 
-## 🚀 Démarrage rapide
+## 🚀 Quick Start
 
 ```bash
-# 1. Cloner le dépôt
-git clone https://github.com/w7zk0/prometheus-grafana-portfolio.git
-cd prometheus-grafana-portfolio
+# 1. Clone the repository
+git clone https://github.com/w7zk0/prometheus-grafana-sandbox.git
+cd prometheus-grafana-sandbox
 
-# 2. (Optionnel) Adapter le mot de passe Grafana
+# 2. (Optional) Adjust Grafana password
 cp .env.example .env
-# Éditer .env si besoin
+# Edit .env if needed
 
-# 3. Lancer la stack
+# 3. Start the stack
 docker compose up -d
+# or with Podman:
+# podman compose up -d
 
-# 4. Vérifier que tout est healthy
+# 4. Check that everything is healthy
 docker compose ps
 ```
 
-Attendre 30-60 secondes que les healthchecks passent.
+Wait 30–60 seconds for healthchecks to pass.
 
 ---
 
-## 🌐 Accès aux interfaces
+## 🌐 Access the UIs
 
-| Service          | URL                      | Identifiants                  |
-|------------------|--------------------------|-------------------------------|
-| **Grafana**      | http://localhost:3000    | `admin` / `PortfolioAdmin2024!` |
-| **Prometheus**   | http://localhost:9090    | Aucun (à sécuriser en prod)   |
-| **Node Exporter**| http://localhost:9100/metrics | -                          |
-| **cAdvisor**     | http://localhost:8080    | -                             |
+| Service            | URL                            | Credentials                    |
+|--------------------|--------------------------------|--------------------------------|
+| **Grafana**        | http://localhost:3000          | `admin` / `admin`              |
+| **Prometheus**     | http://localhost:9090          | None (secure in production)    |
+| **Alertmanager**   | http://localhost:9093          | -                              |
+| **Node Exporter**  | http://localhost:9100/metrics  | -                              |
+| **Blackbox**       | http://localhost:9115          | -                              |
+| **cAdvisor**       | http://localhost:8080          | -                              |
 
-> ⚠️ **Sécurité** : changez immédiatement le mot de passe Grafana en production et ne exposez jamais Prometheus/cAdvisor publiquement sans authentification / reverse proxy.
+> ⚠️ **Security**: Change the Grafana password immediately in production and never expose Prometheus / cAdvisor / Alertmanager publicly without authentication or a reverse proxy.
 
 ---
 
-## ⚙️ Configuration détaillée
+## ⚙️ Detailed Configuration
 
 ### Prometheus (`prometheus/prometheus.yml`)
 
-- Scrape interval : 15s
-- Retention : 15 jours / 5 Go max
-- Jobs configurés :
+- Scrape interval: 15s
+- Retention: 15 days / 5 GB max
+- Configured jobs:
   - `prometheus` (self-monitoring)
   - `node` (Node Exporter)
-  - `cadvisor` (conteneurs)
+  - `cadvisor` (containers)
   - `grafana`
+  - `blackbox` + HTTP/TCP probes
+  - `alertmanager`
 
-### Règles d’alerting (`prometheus/rules/alerts.yml`)
+### Alerting rules (`prometheus/rules/alerts.yml`)
 
-Exemples inclus :
-- CPU > 80 % pendant 5 min
-- Mémoire > 85 %
-- Espace disque < 15 %
+Examples included:
+- CPU > 80% for 5 min
+- Memory > 85%
+- Disk space < 15%
 - Instance down
+- Endpoint down (Blackbox)
+- High latency
+- SSL certificate expiring soon
 
-Pour activer Alertmanager, décommentez la section `alerting` et ajoutez le service dans le `docker-compose.yml`.
+Alertmanager is enabled and receives alerts from Prometheus.
 
 ### Grafana provisioning
 
-- Datasource Prometheus ajoutée automatiquement
-- Dossier de dashboards « SysAdmin Portfolio » préparé
+- Prometheus datasource added automatically
+- “SysAdmin Portfolio” dashboard folder prepared
+
+### Alertmanager (`alertmanager/alertmanager.yml`)
+
+- Grouping by `alertname`, `severity`, `instance`
+- Separate receivers for `critical` and `warning` (Slack/email examples commented out, ready to enable)
+- Inhibit rules to reduce noise
 
 ---
 
-## 📊 Dashboards recommandés
+## 📊 Recommended Dashboards
 
-Une fois Grafana lancé :
+Once Grafana is running:
 
-1. Allez dans **Dashboards → Import**
-2. Importez les dashboards communautaires suivants (très utilisés en production) :
+1. Go to **Dashboards → Import**
+2. Import the following community dashboards (widely used in production):
 
-| ID     | Nom                          | Description                          |
-|--------|------------------------------|--------------------------------------|
-| **1860** | Node Exporter Full          | Dashboard le plus complet pour host  |
-| **193**  | Docker Monitoring (cAdvisor)| Vue des conteneurs                   |
-| **3662** | Prometheus 2.0 Stats        | Santé de Prometheus lui-même         |
+| ID       | Name                         | Description                          |
+|----------|------------------------------|--------------------------------------|
+| **1860** | Node Exporter Full           | Most complete host dashboard         |
+| **193**  | Docker Monitoring (cAdvisor) | Container view                       |
+| **3662** | Prometheus 2.0 Stats         | Prometheus health itself             |
+| **7587** | Blackbox Exporter            | Probe success / latency              |
 
-Ou créez vos propres panels avec les requêtes ci-dessous.
+Or create your own panels with the queries below.
 
 ---
 
-## 🔍 Exemples de requêtes PromQL
+## 🔍 PromQL Examples
 
 ```promql
-# Utilisation CPU moyenne (non-idle)
+# Average CPU usage (non-idle)
 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
 
-# Mémoire disponible en %
+# Available memory in %
 (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
 
-# Espace disque libre en %
+# Free disk space in %
 (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes) * 100
 
-# Charge réseau (réception)
+# Network receive rate
 rate(node_network_receive_bytes_total[5m])
 
-# Nombre de conteneurs en cours
+# Number of running containers
 count(container_last_seen)
 
-# CPU par conteneur
+# CPU per container
 rate(container_cpu_usage_seconds_total{name!=""}[5m]) * 100
+
+# Blackbox probe success
+probe_success
 ```
 
 ---
 
-## ✅ Bonnes pratiques appliquées
+## ✅ Applied Best Practices
 
-| Pratique                        | Implémentation                                      |
-|---------------------------------|-----------------------------------------------------|
-| Versions pinnées                | Images avec tags précis (pas de `:latest`)          |
-| Volumes persistants             | `prometheus_data` + `grafana_data`                  |
-| Configuration en lecture seule  | `:ro` sur les montages de config                    |
-| Healthchecks                    | Tous les services critiques                         |
-| Limites de ressources           | CPU / mémoire définis                               |
-| Réseau isolé                    | Network `monitoring` dédié                          |
-| Provisioning déclaratif         | Datasource + dashboards via fichiers                |
-| Documentation claire            | README + commentaires dans les fichiers             |
-| Sécurité de base                | Mot de passe Grafana, pas d’inscription ouverte     |
-
----
-
-## 🔒 Améliorations possibles (niveau production)
-
-- [ ] Ajouter **Alertmanager** + notifications (Slack, email, PagerDuty)
-- [ ] Mettre un **reverse proxy** (Traefik / Caddy / Nginx) avec HTTPS + Basic Auth / OAuth
-- [ ] Remote write vers Thanos / Cortex / Grafana Cloud pour rétention longue
-- [ ] Ajouter **Blackbox Exporter** pour le monitoring HTTP/TCP/ICMP externe
-- [ ] Instrumenter des applications (exporters MySQL, Redis, Nginx…)
-- [ ] Recording rules pour pré-agréger les métriques coûteuses
-- [ ] Secrets management (Docker secrets ou Vault)
-- [ ] Déploiement multi-nœuds / Kubernetes (Prometheus Operator)
+| Practice                      | Implementation                                      |
+|-------------------------------|-----------------------------------------------------|
+| Pinned versions               | Images with specific tags (no `:latest`)            |
+| Persistent volumes            | `prometheus_data` + `grafana_data` + `alertmanager_data` |
+| Read-only configuration       | `:ro` on config mounts                              |
+| Healthchecks                  | All critical services                               |
+| Resource limits               | CPU / memory defined                                |
+| Isolated network              | Dedicated `monitoring` network                      |
+| Declarative provisioning      | Datasource + dashboards via files                   |
+| Clear documentation           | README + comments in files                          |
+| Basic security                | Grafana password, sign-up disabled                  |
 
 ---
 
-## 📁 Structure du projet
+## 🔒 Possible Production Improvements
+
+- [x] **Alertmanager** (Slack/email notifications ready to wire)
+- [ ] Add a **reverse proxy** (Traefik / Caddy / Nginx) with HTTPS + Basic Auth / OAuth
+- [ ] Remote write to Thanos / Cortex / Grafana Cloud for long-term retention
+- [x] **Blackbox Exporter** for external HTTP/TCP/ICMP monitoring
+- [ ] Instrument applications (MySQL, Redis, Nginx exporters…)
+- [ ] Recording rules to pre-aggregate expensive metrics
+- [ ] Secrets management (Docker secrets or Vault)
+- [ ] Multi-node / Kubernetes deployment (Prometheus Operator)
+
+---
+
+## 📁 Project Structure
 
 ```
-prometheus-grafana-portfolio/
-├── docker-compose.yml              # Orchestration de la stack
-├── .env.example                    # Variables d'environnement
+prometheus-grafana-sandbox/
+├── docker-compose.yml              # Stack orchestration
+├── .env.example                    # Environment variables
 ├── prometheus/
-│   ├── prometheus.yml              # Config principale
+│   ├── prometheus.yml              # Main config
 │   └── rules/
-│       └── alerts.yml              # Règles d'alerting
+│       └── alerts.yml              # Alerting rules
+├── alertmanager/
+│   └── alertmanager.yml            # Alertmanager config
+├── blackbox/
+│   └── blackbox.yml                # Blackbox modules
 ├── grafana/
 │   └── provisioning/
 │       ├── datasources/
-│       │   └── datasource.yml      # Auto-config Prometheus
+│       │   └── datasource.yml      # Auto Prometheus datasource
 │       └── dashboards/
-│           └── dashboard.yml       # Provider de dashboards
-├── docs/                           # Documentation complémentaire
-├── assets/                         # Images / captures pour le portfolio
-└── README.md                       # Ce fichier
+│           └── dashboard.yml       # Dashboard provider
+├── docs/                           # Extra documentation / GitHub Pages
+├── assets/                         # Images / screenshots for the portfolio
+└── README.md                       # This file
 ```
 
 ---
 
-## 👤 Auteur
+## 👤 Author
 
 **w7zk0**  
-SysAdmin / DevOps / SRE en devenir  
+Aspiring SysAdmin / DevOps / SRE  
 
-- GitHub : https://github.com/w7zk0
-- LinkedIn : [à compléter]
-- Email : [à compléter]
+- GitHub: https://github.com/w7zk0
+- LinkedIn: [to complete]
+- Email: [to complete]
 
-> Ce projet fait partie de mon portfolio freelance IT.  
-> N’hésitez pas à me contacter pour des missions de monitoring, infrastructure as code ou optimisation système.
-
----
-
-## 📄 Licence
-
-MIT – Libre d’utilisation et de modification (avec attribution appréciée).
+> This project is part of my freelance IT portfolio.  
+> Feel free to contact me for monitoring, infrastructure-as-code, or system optimization work.
 
 ---
 
-**Merci d’avoir consulté ce projet !**  
-Si vous le trouvez utile, un ⭐ sur GitHub fait toujours plaisir 😊
+## 📄 License
+
+MIT – Free to use and modify (attribution appreciated).
+
+---
+
+**Thanks for checking out this project!**  
+If you find it useful, a ⭐ on GitHub is always welcome 😊
