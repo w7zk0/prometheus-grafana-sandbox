@@ -51,35 +51,6 @@ Everything is orchestrated with **Docker Compose**, including persistent volumes
 
 <img width="807" height="693" alt="Untitled-2026-09-15-2047" src="https://github.com/user-attachments/assets/19f33168-b549-434d-aef3-f5416772a9f4" />
 
-```
-
-┌─────────────────────────────────────────────────────────────┐
-│                     Linux Host / Docker                      │
-│                                                             │
-│  ┌──────────────┐     scrape      ┌──────────────────────┐  │
-│  │ Node Exporter│◄────────────────┤                      │  │
-│  │   :9100      │                 │                      │  │
-│  └──────────────┘                 │     Prometheus       │  │
-│                                   │       :9090          │  │
-│  ┌──────────────┐     scrape      │                      │  │
-│  │   cAdvisor   │◄────────────────┤  - scrape configs    │  │
-│  │   :8080      │                 │  - rules / alerts    │  │
-│  └──────────────┘                 │  - TSDB (15d / 5GB)  │  │
-│                                   └──────────┬───────────┘  │
-│                                              │              │
-│                                              │ query        │
-│                                              ▼              │
-│                                   ┌──────────────────────┐  │
-│                                   │      Grafana         │  │
-│                                   │       :3000          │  │
-│                                   │  - Auto datasource   │  │
-│                                   │  - Dashboards        │  │
-│                                   └──────────────────────┘  │
-│                                                             │
-│  Blackbox Exporter (:9115)  →  probes HTTP/TCP targets      │
-│  Alertmanager (:9093)       ←  receives alerts from Prom    │
-└─────────────────────────────────────────────────────────────┘
-```
 
 **Data flow**:
 1. Node Exporter and cAdvisor expose metrics in Prometheus format.
