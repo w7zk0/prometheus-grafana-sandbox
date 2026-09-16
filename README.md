@@ -1,12 +1,4 @@
-# 🚀 SysAdmin Portfolio – Prometheus + Grafana Monitoring Stack (Docker)
-
-> **Demo project** showcasing monitoring, observability, and system administration skills.  
-> Complete, ready-to-deploy stack following Docker & Prometheus best practices.
-
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
-[![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+# Prometheus + Grafana Monitoring Stack (Docker)
 
 ---
 
@@ -24,7 +16,7 @@
 - [Applied Best Practices](#-applied-best-practices)
 - [Possible Production Improvements](#-possible-production-improvements)
 - [Project Structure](#-project-structure)
-- [Author](#-author)
+
 
 ---
 
@@ -266,26 +258,3 @@ prometheus-grafana-sandbox/
 ```
 
 ---
-
-## 👤 Author
-
-**w7zk0**  
-Aspiring SysAdmin / DevOps / SRE  
-
-- GitHub: https://github.com/w7zk0
-- LinkedIn: [to complete]
-- Email: [to complete]
-
-> This project is part of my freelance IT portfolio.  
-> Feel free to contact me for monitoring, infrastructure-as-code, or system optimization work.
-
----
-
-## 📄 License
-
-MIT – Free to use and modify (attribution appreciated).
-
----
-
-**Thanks for checking out this project!**  
-If you find it useful, a ⭐ on GitHub is always welcome 😊
